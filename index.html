@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f2a4a">
+<title>ePunch MRSM SAS</title>
+<style>
+  :root{
+    --navy:#0f2a4a; --navy2:#17406e; --hijau:#12925a; --hijau2:#0c7446;
+    --merah:#c8372d; --merah2:#a0281f; --latar:#f2f5f9; --kad:#ffffff;
+    --teks:#1b2733; --kabur:#66758a; --garis:#e1e7ef; --kuning:#b7791f;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;height:100%}
+  body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--latar);color:var(--teks);font-size:16px;line-height:1.45}
+  .bungkus{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column}
+  header{background:linear-gradient(160deg,var(--navy),var(--navy2));color:#fff;text-align:center;padding:18px 16px 22px;border-radius:0 0 22px 22px}
+  header img{width:54px;height:54px;object-fit:contain;display:block;margin:0 auto 6px}
+  header h1{margin:0;font-size:19px;letter-spacing:.3px}
+  header p{margin:2px 0 0;font-size:12.5px;opacity:.8}
+  main{flex:1;padding:16px 16px 90px}
+  .kad{background:var(--kad);border:1px solid var(--garis);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(15,42,74,.05)}
+  label{display:block;font-size:13px;font-weight:600;color:var(--kabur);margin:12px 0 5px}
+  input,textarea{width:100%;font:inherit;padding:13px 14px;border:1.5px solid var(--garis);border-radius:12px;background:#fff;color:var(--teks)}
+  input:focus,textarea:focus{outline:none;border-color:var(--navy2)}
+  #noGaji{font-size:22px;font-weight:700;text-align:center;letter-spacing:2px}
+  .btn{width:100%;border:0;border-radius:12px;padding:14px;font:inherit;font-weight:700;color:#fff;background:var(--navy);margin-top:16px;cursor:pointer}
+  .btn:disabled{opacity:.55}
+  .btn.kedua{background:#e9eef5;color:var(--navy)}
+  .salam{font-size:14px;color:var(--kabur);margin:0}
+  .nama{font-size:18px;font-weight:700;margin:2px 0 0}
+  .unit{font-size:13px;color:var(--kabur)}
+  .jam{font-size:44px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:1px;margin:6px 0 0;color:var(--navy)}
+  .tarikh{text-align:center;color:var(--kabur);font-size:14px;margin-bottom:18px}
+  .pilih{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .punch{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:150px;border-radius:18px;border:0;color:#fff;font:inherit;cursor:pointer;padding:14px 8px;transition:transform .12s}
+  .punch:active{transform:scale(.97)}
+  .punch.in{background:linear-gradient(160deg,#1bb574,var(--hijau2));box-shadow:0 8px 20px rgba(18,146,90,.3)}
+  .punch.out{background:linear-gradient(160deg,#e25348,var(--merah2));box-shadow:0 8px 20px rgba(200,55,45,.3)}
+  .punch:disabled{background:#dbe2ec;color:#7d8a9c;box-shadow:none;cursor:default;transform:none}
+  .punch i{font-style:normal;font-size:30px;line-height:1}
+  .punch b{font-size:19px;letter-spacing:.5px;margin-top:8px}
+  .punch span{font-size:14px;margin-top:4px;font-variant-numeric:tabular-nums}
+  .nota{text-align:center;font-size:12.5px;color:var(--kabur);margin:14px 0 0}
+  .lencana{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;background:#e3f4ec;color:var(--hijau2)}
+  .lencana.lewat{background:#fdf1dc;color:var(--kuning)}
+  .mesej{display:none;padding:11px 13px;border-radius:12px;font-size:14px;margin-bottom:12px}
+  .mesej.ralat{display:block;background:#fdeceb;color:var(--merah2)}
+  .mesej.ok{display:block;background:#e3f4ec;color:var(--hijau2)}
+  .rekod{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--garis)}
+  .rekod:last-child{border-bottom:0}
+  .rekod .hari{font-weight:700;font-size:15px}
+  .rekod .masa{font-size:13.5px;color:var(--kabur);font-variant-numeric:tabular-nums}
+  .rekod .kanan{text-align:right;white-space:nowrap}
+  .kosong{text-align:center;color:var(--kabur);padding:22px 0;font-size:14px}
+  nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--garis);display:none;padding-bottom:env(safe-area-inset-bottom)}
+  nav .dalam{max-width:480px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+  nav button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--kabur);padding:11px 4px 12px;cursor:pointer}
+  nav button i{display:block;font-style:normal;font-size:20px;line-height:1.2}
+  nav button.aktif{color:var(--navy)}
+  footer{text-align:center;font-size:11.5px;color:var(--kabur);padding:0 16px 84px}
+  .login footer{padding-bottom:20px}
+  .tirai{position:fixed;inset:0;background:rgba(15,42,74,.55);display:none;align-items:flex-end;justify-content:center;z-index:10}
+  .tirai.buka{display:flex}
+  .helaian{background:#fff;width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + env(safe-area-inset-bottom))}
+  .helaian h2{margin:0 0 4px;font-size:18px}
+  .helaian p{margin:0;font-size:13.5px;color:var(--kabur)}
+  .sembunyi{display:none!important}
+</style>
+</head>
+<body>
+<div class="bungkus login" id="bungkus">
+  <header>
+    <img id="logo" alt="Logo MRSM SAS">
+    <h1>ePunch MRSM SAS</h1>
+    <p>Sistem Punch Card Online &middot; Bekerja Dari Rumah</p>
+  </header>
+
+  <main>
+    <div id="mesej" class="mesej"></div>
+
+    <!-- LOG MASUK -->
+    <section id="vLogin" class="kad">
+      <form id="fLogin" autocomplete="on">
+        <label for="noGaji" style="margin-top:0">No. Gaji</label>
+        <input id="noGaji" inputmode="numeric" autocomplete="username" placeholder="Contoh: 12345" required>
+        <div id="kotakIc" class="sembunyi">
+          <label for="ic4">4 digit akhir No. Kad Pengenalan</label>
+          <input id="ic4" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+        </div>
+        <button class="btn" id="bLogin" type="submit">Masuk</button>
+      </form>
+      <p class="nota">Masukkan No. Gaji anda untuk punch in atau punch out.</p>
+    </section>
+
+    <!-- UTAMA -->
+    <section id="vUtama" class="sembunyi">
+      <div class="kad">
+        <p class="salam" id="salam"></p>
+        <p class="nama" id="nama"></p>
+        <span class="unit" id="jawatan"></span>
+      </div>
+      <div class="kad">
+        <div class="jam" id="jam">--:--:--</div>
+        <div class="tarikh" id="tarikh"></div>
+        <div class="pilih">
+          <button class="punch in" id="bIn" disabled><i>&#8594;</i><b>PUNCH IN</b><span id="tIn">--:--</span></button>
+          <button class="punch out" id="bOut" disabled><i>&#8592;</i><b>PUNCH OUT</b><span id="tOut">--:--</span></button>
+        </div>
+        <p class="nota" id="ringkas">Memuat status hari ini...</p>
+        <button class="btn kedua sembunyi" id="bUlang">Muat Semula</button>
+      </div>
+    </section>
+
+    <!-- REKOD -->
+    <section id="vRekod" class="sembunyi">
+      <div class="kad">
+        <label for="bulan" style="margin-top:0">Bulan</label>
+        <input type="month" id="bulan">
+        <p class="nota" id="jumlah"></p>
+      </div>
+      <div class="kad" id="senarai"></div>
+    </section>
+
+    <!-- PROFIL -->
+    <section id="vProfil" class="sembunyi">
+      <div class="kad">
+        <p class="salam">Nama Penuh</p><p class="nama" id="prNama"></p>
+        <p class="salam" style="margin-top:12px">No. Gaji</p><p class="nama" id="prGaji"></p>
+        <p class="salam" style="margin-top:12px">Jawatan</p><p class="nama" id="prJawatan"></p>
+        <button class="btn kedua" id="bKeluar">Log Keluar / Tukar Pengguna</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>Dibangunkan Oleh Unit Sains dan Unit ICT MRSM SAS 2026</footer>
+</div>
+
+<nav id="nav"><div class="dalam">
+  <button data-v="vUtama" class="aktif"><i>&#9201;</i>Punch</button>
+  <button data-v="vRekod"><i>&#128203;</i>Rekod</button>
+  <button data-v="vProfil"><i>&#128100;</i>Profil</button>
+</div></nav>
+
+<!-- CATATAN PUNCH OUT -->
+<div class="tirai" id="tirai">
+  <div class="helaian">
+    <h2>Punch Out</h2>
+    <p>Apa yang disiapkan hari ini? (pilihan)</p>
+    <label for="catatan">Catatan tugasan</label>
+    <textarea id="catatan" rows="4" maxlength="500" placeholder="Contoh: PdP dalam talian 4 Amanah, semakan tugasan..."></textarea>
+    <button class="btn" id="bSahOut" style="background:var(--merah)">Sahkan Punch Out</button>
+    <button class="btn kedua" id="bBatal" style="margin-top:8px">Batal</button>
+  </div>
+</div>
+
+<script>
+/* ====== TETAPAN: tukar dua nilai ini ====== */
+const API_URL  = 'TAMPAL_URL_EXEC_DI_SINI';   // URL web app Apps Script (berakhir /exec)
+const LOGO_URL = '';                           // URL imej logo MRSM SAS
+/* ========================================== */
+
+const KUNCI = 'epunch_sesi';
+const $ = id => document.getElementById(id);
+let sesi = null, hariIni = null;
+
+const logo = $('logo');
+if (LOGO_URL) { logo.src = LOGO_URL; logo.onerror = () => logo.classList.add('sembunyi'); }
+else logo.classList.add('sembunyi');
+
+function simpan(s){ sesi = s; try{ s ? localStorage.setItem(KUNCI, JSON.stringify(s)) : localStorage.removeItem(KUNCI); }catch(e){} }
+function muat(){ try{ return JSON.parse(localStorage.getItem(KUNCI)); }catch(e){ return null; } }
+
+function mesej(teks, jenis){
+  const m = $('mesej');
+  m.textContent = teks || '';
+  m.className = 'mesej' + (teks ? ' ' + (jenis || 'ralat') : '');
+  if (teks && jenis === 'ok') setTimeout(() => { if (m.textContent === teks) mesej(''); }, 4000);
+}
+
+async function api(action, data){
+  const badan = Object.assign({ action }, sesi ? { noGaji: sesi.noGaji, token: sesi.token } : {}, data || {});
+  let res;
+  try{
+    const r = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(badan)
+    });
+    res = await r.json();
+  }catch(e){
+    return { ok:false, mesej:'Tiada sambungan ke server. Semak internet dan cuba lagi.' };
+  }
+  if (res && res.kod === 'AUTH') { keluar(); mesej(res.mesej); }
+  return res;
+}
+
+/* ---------- Paparan ---------- */
+function papar(v){
+  ['vLogin','vUtama','vRekod','vProfil'].forEach(id => $(id).classList.toggle('sembunyi', id !== v));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('aktif', b.dataset.v === v));
+  const masuk = v !== 'vLogin';
+  $('nav').style.display = masuk ? 'block' : 'none';
+  $('bungkus').classList.toggle('login', !masuk);
+  if (v === 'vRekod') muatRekod();
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => { mesej(''); papar(b.dataset.v); });
+
+function masukSistem(){
+  $('nama').textContent = sesi.nama; $('jawatan').textContent = sesi.jawatan || '';
+  $('prNama').textContent = sesi.nama; $('prGaji').textContent = sesi.noGaji; $('prJawatan').textContent = sesi.jawatan || '-';
+  papar('vUtama'); muatStatus();
+}
+function keluar(){
+  simpan(null); hariIni = null; $('fLogin').reset();
+  $('kotakIc').classList.add('sembunyi'); papar('vLogin');
+}
+$('bKeluar').onclick = () => { if (confirm('Log keluar dari telefon ini?')) keluar(); };
+
+/* ---------- Jam ---------- */
+const HARI = ['Ahad','Isnin','Selasa','Rabu','Khamis','Jumaat','Sabtu'];
+const BULAN = ['Januari','Februari','Mac','April','Mei','Jun','Julai','Ogos','September','Oktober','November','Disember'];
+function detik(){
+  const d = new Date(), p = n => String(n).padStart(2,'0');
+  $('jam').textContent = p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  $('tarikh').textContent = HARI[d.getDay()] + ', ' + d.getDate() + ' ' + BULAN[d.getMonth()] + ' ' + d.getFullYear();
+  const j = d.getHours();
+  $('salam').textContent = j < 12 ? 'Selamat pagi,' : j < 15 ? 'Selamat tengah hari,' : j < 19 ? 'Selamat petang,' : 'Selamat malam,';
+}
+detik(); setInterval(detik, 1000);
+
+/* ---------- Log masuk (No. Gaji) ---------- */
+$('fLogin').onsubmit = async e => {
+  e.preventDefault(); mesej('');
+  const b = $('bLogin'); b.disabled = true; b.textContent = 'Menyemak...';
+  const res = await api('login', { noGaji: $('noGaji').value.trim(), ic4: $('ic4').value.trim() });
+  b.disabled = false; b.textContent = 'Masuk';
+  if (!res.ok) {
+    if (res.kod === 'IC') {
+      const baru = $('kotakIc').classList.contains('sembunyi');
+      $('kotakIc').classList.remove('sembunyi'); $('ic4').focus();
+      if (baru) return;                 // kali pertama: hanya paparkan medan
+    }
+    return mesej(res.mesej);
+  }
+  simpan(Object.assign({ token: res.token }, res.staf));
+  masukSistem();
+};
+
+/* ---------- Status & butang ---------- */
+function lukis(){
+  const h = hariIni;
+  $('bUlang').classList.add('sembunyi');
+  $('tIn').textContent  = h && h.masaIn  ? h.masaIn.slice(0,5)  : '--:--';
+  $('tOut').textContent = h && h.masaOut ? h.masaOut.slice(0,5) : '--:--';
+  $('bIn').disabled  = !!h;                       // sudah punch in
+  $('bOut').disabled = !h || !!h.masaOut;         // belum in, atau sudah out
+  if (!h) $('ringkas').textContent = 'Anda belum punch in hari ini.';
+  else if (!h.masaOut) $('ringkas').textContent = 'Status: ' + h.status + '. Jangan lupa punch out.';
+  else $('ringkas').textContent = 'Selesai hari ini \u00b7 ' + h.status + ' \u00b7 Jumlah: ' + h.jumlahJam;
+}
+function sibuk(teks){
+  $('bIn').disabled = true; $('bOut').disabled = true;
+  $('ringkas').textContent = teks;
+}
+async function muatStatus(){
+  sibuk('Memuat status hari ini...');
+  const res = await api('status');
+  if (!sesi) return;
+  if (!res.ok) {
+    mesej(res.mesej); $('ringkas').textContent = 'Status tidak dapat dimuat.';
+    $('bUlang').classList.remove('sembunyi'); return;
+  }
+  mesej(''); hariIni = res.hariIni; lukis();
+}
+$('bUlang').onclick = muatStatus;
+
+function lokasi(){
+  return new Promise(selesai => {
+    if (!navigator.geolocation) return selesai('');
+    navigator.geolocation.getCurrentPosition(
+      p => selesai(p.coords.latitude.toFixed(5) + ',' + p.coords.longitude.toFixed(5)),
+      () => selesai(''),
+      { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
+  });
+}
+
+async function punch(jenis, catatan){
+  mesej(''); sibuk('Merekod, sila tunggu...');
+  const lok = await lokasi();
+  const res = await api('punch', { jenis, lokasi: lok, catatan: catatan || '' });
+  if (!sesi) return;
+  if (res.hariIni !== undefined) hariIni = res.hariIni;
+  lukis();
+  mesej(res.mesej + (res.ok && !lok ? ' (lokasi tidak dapat direkod)' : ''), res.ok ? 'ok' : 'ralat');
+}
+
+$('bIn').onclick  = () => punch('in');
+$('bOut').onclick = () => { $('catatan').value = ''; $('tirai').classList.add('buka'); };
+$('bBatal').onclick = () => $('tirai').classList.remove('buka');
+$('bSahOut').onclick = () => { const c = $('catatan').value.trim(); $('tirai').classList.remove('buka'); punch('out', c); };
+
+/* ---------- Rekod ---------- */
+(function(){ const d = new Date(); $('bulan').value = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); })();
+$('bulan').onchange = muatRekod;
+
+async function muatRekod(){
+  const kotak = $('senarai');
+  kotak.innerHTML = '<div class="kosong">Memuat rekod...</div>'; $('jumlah').textContent = '';
+  const res = await api('rekod', { bulan: $('bulan').value });
+  if (!sesi) return;
+  kotak.innerHTML = '';
+  if (!res.ok) { kotak.innerHTML = '<div class="kosong">Gagal memuat rekod.</div>'; return mesej(res.mesej); }
+  if (!res.senarai.length) { kotak.innerHTML = '<div class="kosong">Tiada rekod untuk bulan ini.</div>'; return; }
+  let lewat = 0;
+  res.senarai.forEach(r => {
+    if (r.status === 'Lewat') lewat++;
+    const t = r.tarikh.split('-'), d = new Date(+t[0], +t[1]-1, +t[2]);
+    const baris = document.createElement('div'); baris.className = 'rekod';
+    const kiri = document.createElement('div');
+    const hari = document.createElement('div'); hari.className = 'hari';
+    hari.textContent = d.getDate() + ' ' + BULAN[d.getMonth()].slice(0,3) + ' \u00b7 ' + HARI[d.getDay()];
+    const masa = document.createElement('div'); masa.className = 'masa';
+    masa.textContent = (r.masaIn || '--:--').slice(0,5) + '  \u2192  ' + (r.masaOut ? r.masaOut.slice(0,5) : 'tiada punch out');
+    kiri.append(hari, masa);
+    const kanan = document.createElement('div'); kanan.className = 'kanan';
+    const l = document.createElement('span'); l.className = 'lencana' + (r.status === 'Lewat' ? ' lewat' : ''); l.textContent = r.status;
+    const j = document.createElement('div'); j.className = 'masa'; j.textContent = r.jumlahJam || '';
+    kanan.append(l, j);
+    baris.append(kiri, kanan); kotak.append(baris);
+  });
+  $('jumlah').textContent = res.senarai.length + ' hari direkod \u00b7 ' + lewat + ' lewat';
+}
+
+/* ---------- Mula ---------- */
+sesi = muat();
+if (sesi && sesi.token) masukSistem(); else papar('vLogin');
+</script>
+</body>
+</html>
