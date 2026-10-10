@@ -143,6 +143,9 @@
           <p class="nama">Rekod Semua Staf</p>
           <label for="aBulan">Bulan</label>
           <input type="month" id="aBulan">
+          <label for="aTarikh">Tarikh tertentu (pilihan)</label>
+          <input type="date" id="aTarikh">
+          <button class="btnKecil sembunyi" id="bKosongTarikh" type="button" style="margin-top:8px">Kosongkan tarikh (papar seluruh bulan)</button>
           <label for="aNama">Nama atau No. Gaji</label>
           <input id="aNama" placeholder="Kosongkan untuk semua staf">
           <label for="aStatus">Status</label>
@@ -399,6 +402,10 @@ async function muatRekod(){
 let stafAdmin = null;
 function kemasNav(){ $('navAdmin').classList.toggle('sembunyi', !(sesi && sesi.admin)); }
 $('aBulan').value = $('bulan').value;
+function kemasTarikh(){ $('bKosongTarikh').classList.toggle('sembunyi', !$('aTarikh').value); }
+$('aTarikh').onchange = () => { if ($('aTarikh').value) $('aBulan').value = $('aTarikh').value.slice(0,7); kemasTarikh(); };
+$('aBulan').onchange = () => { $('aTarikh').value = ''; kemasTarikh(); };
+$('bKosongTarikh').onclick = () => { $('aTarikh').value = ''; kemasTarikh(); };
 
 async function apiAdmin(action, data){
   const res = await api(action, Object.assign({ kodAdmin: sesi.kodAdmin || '' }, data || {}));
@@ -429,7 +436,7 @@ $('bCari').onclick = async () => {
   const kotak = $('aSenarai'), b = $('bCari');
   mesej(''); b.disabled = true; $('aRingkas').textContent = '';
   kotak.innerHTML = '<div class="kosong">Memuat rekod...</div>';
-  const res = await apiAdmin('adminRekod', { bulan: $('aBulan').value, nama: $('aNama').value.trim(), status: $('aStatus').value });
+  const res = await apiAdmin('adminRekod', { bulan: $('aBulan').value, tarikh: $('aTarikh').value, nama: $('aNama').value.trim(), status: $('aStatus').value });
   b.disabled = false;
   if (!sesi) return;
   kotak.innerHTML = '';
